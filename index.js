@@ -8,13 +8,8 @@ const Person = require('./models/person')
 app.use(cors())
 app.use(express.static('build'))
 app.use(bodyParser.json())
-morgan.token('content', (req, res) => { return JSON.stringify(req.body)})
+morgan.token('content', req => { return JSON.stringify(req.body)})
 app.use(morgan(':method :url :content :status :res[content-length] - :response-time ms'))
-
-const person = new Person({
-  name: process.argv[2],
-  number: process.argv[3]
-})
 
 app.get('/api/persons', (req, res) => {
   Person
@@ -30,8 +25,8 @@ app.get('/api/persons/:id', (req, res) => {
     .then(person => {
       res.json(Person.format(person))
     })
-    .catch(error => {
-      res.status(400).send({ error: 'malformatted id or person not found'})
+    .catch(() => {
+      res.status(400).send({ error: 'malformatted id or person not found' })
     })
   /* if (person) {
     res.status(200).json(person)
@@ -46,18 +41,16 @@ app.delete('/api/persons/:id', (req, res) => {
     .then(() => {
       res.status(204).end()
     })
-    .catch(error => {
-      response.status(400).send({ error: 'malformatted id'})
+    .catch(() => {
+      res.status(400).send({ error: 'malformatted id' })
     })
-
-  
 })
 
 app.post('/api/persons', (req, res) => {
   const body = req.body
 
   if ( body.name.length === 0 || body.number.length === 0 ) {
-    return res.status(400).json({error: 'nimi tai numero puuttuu'})
+    return res.status(400).json({ error: 'nimi tai numero puuttuu' })
   }
 
   /* let unique = true
@@ -81,7 +74,7 @@ app.post('/api/persons', (req, res) => {
     .find({ name: person.name })
     .then(result => {
       if (result.length > 0) {
-        return res.status(400).send({ error: 'nimi löytyy jo luettelosta '})
+        return res.status(400).send({ error: 'nimi löytyy jo luettelosta ' })
       } else {
         person
           .save()
@@ -93,13 +86,13 @@ app.post('/api/persons', (req, res) => {
           })
       }
     })
-    .catch(error => {
-      res.status(400).json({error: 'jotain meni vikaan'})
+    .catch(() => {
+      res.status(400).json({ error: 'jotain meni vikaan' })
     })
 
 
 
-    /* .save()
+  /* .save()
     .then(savedPerson => {
       res.json(Person.format(savedPerson))
     })
@@ -111,7 +104,7 @@ app.post('/api/persons', (req, res) => {
 app.put('/api/persons/:id', (req, res) => {
   const body = req.body
   if ( body.number.length === 0 ) {
-    return res.status(400).json({error: 'numero puuttuu'})
+    return res.status(400).json({ error: 'numero puuttuu' })
   }
 
   const person = {
@@ -126,7 +119,7 @@ app.put('/api/persons/:id', (req, res) => {
     })
     .catch(error => {
       console.log('error: ', error)
-      res.status(400).send({ error: 'malformatted or wrong id'})
+      res.status(400).send({ error: 'malformatted or wrong id' })
     })
 })
 
@@ -136,7 +129,6 @@ app.get('/info', (req, res) => {
     .then(persons => {
       res.send('<p>Puhelinluettelossa on ' + persons.length + ' henkilön tiedot</p><p>' + new Date() + '</p>')
     })
-  
 })
 
 const PORT = process.env.PORT || 3001

@@ -16,11 +16,11 @@ const person = new Person({
 
 if (process.argv[2]) {
   person
-  .save()
-  .then(response => {
-    console.log('Lisätään henkilö ' + person.name + ' numero ' + person.number + ' luetteloon')
-    mongoose.connection.close()
-  })
+    .save()
+    .then(() => {
+      console.log('Lisätään henkilö ' + person.name + ' numero ' + person.number + ' luetteloon')
+      mongoose.connection.close()
+    })
 } else {
   Person
     .find({})
